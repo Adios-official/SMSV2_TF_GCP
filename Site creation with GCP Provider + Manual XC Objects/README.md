@@ -1,7 +1,3 @@
-Thank you for sharing all the necessary files! Here's a tailored README file for your Terraform project. Let me know if you'd like to modify or expand it further.
-
----
-
 # 3-Node Customer Edge Deployment Using Terraform (Google Cloud)
 
 This Terraform configuration deploys three Compute Engine (CE) instances in Google Cloud across different availability zones (AZs) for high availability. Each instance is provisioned with user data and connected to specific subnets within a Virtual Private Cloud (VPC).  
