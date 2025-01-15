@@ -4,18 +4,28 @@ This repository follows a specific folder naming structure to organize various c
 
 ## Folder Naming Structure
 
-The naming structure is designed to clearly represent the configuration setup for each environment, such as the number of nodes, network configuration, and specific Terraform modules being used. The format follows:
+The folder naming structure is designed to clearly represent the configuration setup for each environment, such as the number of nodes, network configuration, and specific setup details. The format follows:
 
-<node-count> NODE - <nic-count> NIC - SMSV2 - GCP - CE - <configuration-details>
-
+<node-count>N-<nic-count>NIC-<configuration-details>
 
 Where:
-- `<node-count>`: The number of nodes (either 1 or 3 nodes) involved in the setup.
-- `<nic-count>`: The number of NICs (Network Interface Cards), which could be 1 or 2.
-- `SMSV2`: Denotes the SMSV2 configuration being used.
-- `GCP`: Indicates that the setup is on Google Cloud Platform (GCP).
-- `CE`: Represents the Cloud Engine or the underlying environment.
-- `<configuration-details>`: Additional configuration details specifying network setups such as NAT, public IP, or proxy.
+- `<node-count>`: The number of nodes (either 1N or 3N) involved in the setup.
+- `<nic-count>`: The number of NICs (Network Interface Cards), which could be 1NIC or 2NIC.
+- `<configuration-details>`: Additional configuration details specifying network setups such as NAT, dynamic/static public IP, and proxy. Examples include:
+  - `NAT`: Network Address Translation enabled.
+  - `DYN`: Dynamic public IP setup.
+  - `STATIC`: Static public IP setup.
+  - `NAT-PROXY`: Network Address Translation with Proxy configuration.
+
+### Examples:
+
+- **3N-1NIC-NAT**: A 3-node setup with 1 NIC and NAT enabled.
+- **1N-2NIC-DYN**: A single-node setup with 2 NICs and a dynamic public IP (without NAT).
+- **3N-2NIC-NAT-PROXY**: A 3-node setup with 2 NICs, NAT, and a proxy configuration.
+- **1N-1NIC-STATIC**: A single-node setup with 1 NIC and a static public IP (without NAT).
+
+This naming convention helps users easily identify the configuration details based on the folder name.
+
 
 ### Example Breakdown:
 
