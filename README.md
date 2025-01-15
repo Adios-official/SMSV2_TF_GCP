@@ -13,7 +13,7 @@ Where:
 - `<nic-count>`: The number of NICs (Network Interface Cards), which could be 1NIC or 2NIC.
 - `<configuration-details>`: Additional configuration details specifying network setups such as NAT, dynamic/static public IP, and proxy. Examples include:
   - `NAT`: Network Address Translation enabled.
-  - `DYN`: Dynamic public IP setup.
+  - `DYN`: Dynamic/Automatically alloted public IP setup.
   - `STATIC`: Static public IP setup.
   - `NAT-PROXY`: Network Address Translation with Proxy configuration.
 
@@ -29,7 +29,7 @@ Where:
 
 - **1N**: Refers to a single-node setup.
 - **2NIC**: Indicates that there are 2 NICs attached to the node.
-- **DYN**: Denotes that the node is configured with a dynamic public IP (without NAT).
+- **DYN**: Denotes that the node is configured with a dynamic/Automatically alloted public IP (without NAT).
 
 #### `3N-2NIC-NAT-PROXY`
 
