@@ -10,6 +10,7 @@ Before using this Terraform project, ensure you have the following:
 - Terraform installed on your local machine
 - A valid token generated from your Distributed Cloud portal
 - SSH key pair for accessing the instances
+- Resources required per node: Minimum 4 vCPUs, 14 GB RAM, and 80 GB disk storage. 
 
 ## Files Overview
 
