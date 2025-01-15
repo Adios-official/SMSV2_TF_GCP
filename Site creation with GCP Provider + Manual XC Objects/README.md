@@ -11,7 +11,8 @@ Before using this Terraform project, ensure you have the following:
 - Terraform installed on your local machine
 - A valid token generated from your Distributed Cloud portal
 - SSH key pair for accessing the instances
-- Resources required per node: Minimum 4 vCPUs, 14 GB RAM, and 80 GB disk storage. 
+- Resources required per node: Minimum 4 vCPUs, 14 GB RAM, and 80 GB disk storage.
+- Image created in GCP using node image file downloaded from Distributed cloud console. Follow "Import CE Site Image" Section in this [page](https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect/how-to/site-management/deploy-sms-gcp-clickops)
 
 ## Files Overview
 
