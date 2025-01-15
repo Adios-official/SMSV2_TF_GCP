@@ -6,7 +6,7 @@ This repository follows a specific folder naming structure to organize various c
 
 The folder naming structure is designed to clearly represent the configuration setup for each environment, such as the number of nodes, network configuration, and specific setup details. The format follows:
 
-<node-count>N-<nic-count>NIC-<configuration-details>
+<node-count> N - <nic-count> NIC - <configuration-details>
 
 Where:
 - `<node-count>`: The number of nodes (either 1N or 3N) involved in the setup.
@@ -17,28 +17,34 @@ Where:
   - `STATIC`: Static public IP setup.
   - `NAT-PROXY`: Network Address Translation with Proxy configuration.
 
-### Examples:
+### Example Breakdown:
 
-- **3N-1NIC-NAT**: A 3-node setup with 1 NIC and NAT enabled.
-- **1N-2NIC-DYN**: A single-node setup with 2 NICs and a dynamic public IP (without NAT).
-- **3N-2NIC-NAT-PROXY**: A 3-node setup with 2 NICs, NAT, and a proxy configuration.
-- **1N-1NIC-STATIC**: A single-node setup with 1 NIC and a static public IP (without NAT).
+#### `3N-1NIC-NAT`
+
+- **3N**: Refers to a setup with 3 nodes.
+- **1NIC**: Indicates that there is 1 Network Interface Card (NIC) attached to each node.
+- **NAT**: Denotes that the nodes are configured with Network Address Translation (NAT) for internet access.
+
+#### `1N-2NIC-DYN`
+
+- **1N**: Refers to a single-node setup.
+- **2NIC**: Indicates that there are 2 NICs attached to the node.
+- **DYN**: Denotes that the node is configured with a dynamic public IP (without NAT).
+
+#### `3N-2NIC-NAT-PROXY`
+
+- **3N**: Refers to a setup with 3 nodes.
+- **2NIC**: Indicates that there are 2 NICs attached to each node.
+- **NAT-PROXY**: Denotes that the nodes are configured with Network Address Translation (NAT) and a proxy for internet access.
+
+#### `1N-1NIC-STATIC`
+
+- **1N**: Refers to a single-node setup.
+- **1NIC**: Indicates that there is 1 NIC attached to the node.
+- **STATIC**: Denotes that the node is configured with a static public IP (without NAT).
 
 This naming convention helps users easily identify the configuration details based on the folder name.
 
-
-### Example Breakdown:
-
-#### `3 NODE - 1 NIC - SMSV2 - GCP - CE - WITH NAT`
-
-- **3 NODE**: Refers to a setup with 3 nodes.
-- **1 NIC**: Indicates that there is 1 Network Interface Card (NIC) attached to each node.
-- **WITH NAT**: Denotes that the nodes are configured with Network Address Translation (NAT) for internet access.
-
-#### Other Examples:
-
-- `3 NODE - 2 NIC - SMSV2 - GCP - CE - WITH NAT & PROXY`: Refers to a setup with 3 nodes, 2 NICs, NAT enabled, and a proxy configured.
-- `1 NODE - 1 NIC - SMSV2 - GCP - CE - STATIC PUBLIC IP & W/O NAT`: Represents a single node with 1 NIC, a static public IP, and no NAT configured.
 
 ## Folder Details
 
