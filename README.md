@@ -6,7 +6,7 @@ This repository follows a specific folder naming structure to organize various c
 
 The folder naming structure is designed to clearly represent the configuration setup for each environment, such as the number of nodes, network configuration, and specific setup details. The format follows:
 
-<node-count> N - <nic-count> NIC - <configuration-details>
+## <node-count> N - <nic-count> NIC - <configuration-details>
 
 Where:
 - `<node-count>`: The number of nodes (either 1N or 3N) involved in the setup.
