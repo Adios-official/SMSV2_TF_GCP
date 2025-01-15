@@ -9,7 +9,7 @@ Before using this Terraform project, ensure you have the following:
 - A Google Cloud Platform (GCP) project
 - A service account with permissions for Compute Engine
 - Terraform installed on your local machine
-- A valid token generated from your Distributed Cloud portal
+- A valid token generated from your Distributed Cloud portal. To see how to generate a valid node token , Follow "Generate Node Token" Section in this [page](https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect/how-to/site-management/deploy-sms-gcp-clickops)
 - SSH key pair for accessing the instances
 - Resources required per node: Minimum 4 vCPUs, 14 GB RAM, and 80 GB disk storage.
 - Image created in GCP using node image file downloaded from Distributed cloud console. Follow "Import CE Site Image" Section in this [page](https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect/how-to/site-management/deploy-sms-gcp-clickops)
