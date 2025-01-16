@@ -47,18 +47,24 @@ resource "google_compute_instance" "instance_1" {
     }
   }
 
-  network_interface {
-    network    = var.slo_vpc_network # Reference to the VPC network
-    subnetwork = var.slo_subnetwork_1
-    access_config {}
-    # No access_config block means no public IP
+  dynamic "network_interface" {
+    for_each = var.num_nics >= 1 ? [1] : []
+    content {
+      network    = var.slo_vpc_network
+      subnetwork = var.slo_subnetwork_1
+      access_config {}
+    }
   }
 
-  network_interface {
-    network    = var.sli_vpc_network # Reference to the VPC network
-    subnetwork = var.sli_subnetwork_1
-    # No access_config block means no public IP
+  dynamic "network_interface" {
+    for_each = var.num_nics == 2 ? [1] : []
+    content {
+      network    = var.sli_vpc_network
+      subnetwork = var.sli_subnetwork_1
+      # No access_config block means no public IP
+    }
   }
+  
   # Metadata block to include key-value pairs
   metadata = {
     ssh-keys     = "admin:${var.ssh_public_key}" # Direct SSH key in metadata

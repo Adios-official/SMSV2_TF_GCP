@@ -80,3 +80,9 @@ variable "api_url" {
   type        = string
   description = "REQUIRED:  This is your Volterra API url"
 }
+
+variable "num_nics" {
+  description = "Number of network interfaces (1 for single NIC, 2 for dual NIC)"
+  type        = number
+  default     = 1 # Default to single NIC
+}
