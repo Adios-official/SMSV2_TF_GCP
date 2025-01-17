@@ -1,4 +1,4 @@
-# README for CE with Public IP Assignment and No NAT
+# CE with Public IP Assignment and No NAT
 
 ## Overview
 
