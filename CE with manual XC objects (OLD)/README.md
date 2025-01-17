@@ -1,4 +1,4 @@
-# 3-Node Customer Edge Deployment Using Terraform (Google Cloud)
+# 3-Node Customer Edge Deployment Using Terraform (Google Cloud Provider) and with manual XC objects  ( OLD METHOD )
 
 This Terraform configuration deploys three Compute Engine (CE) instances in Google Cloud across different availability zones (AZs) for high availability. Each instance is provisioned with user data and connected to specific subnets within a Virtual Private Cloud (VPC).  
 Ref : https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect/how-to/site-management/deploy-sms-gcp-clickops for clickops
