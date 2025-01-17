@@ -6,7 +6,8 @@ This repository contains multiple Terraform configurations to deploy **Customer 
 - **CE with Public SLO IP**
 - **CE with Manual XC Objects (Old Method)**
 
-Each folder contains a specific Terraform configuration that deploys a high-availability 3-node Customer Edge (CE) solution in Google Cloud, with varying requirements for network configuration and proxy setups.
+Each folder contains a specific Terraform configuration that deploys a Single-node CE or High Availability (HA) CE with three nodes solution with Single NIC or dual NIC setups in Google Cloud, with varying requirements for network configuration and proxy setups.
+
 
 ## Folder Structure
 
