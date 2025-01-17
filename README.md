@@ -1,4 +1,4 @@
-# Multi-Deployment Customer Edge (CE) Solutionson GCP - Brown Field Deployments
+# Multi-Deployment Customer Edge (CE) Solutions on GCP - Brown Field Deployments
 
 This repository contains multiple Terraform configurations to deploy **Customer Edge (CE)** instances in Google Cloud, each designed to cater to different use cases. The configurations are organized into three distinct folders based on the deployment method, which are as follows:
 
