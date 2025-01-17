@@ -1,104 +1,103 @@
-# Project Folder Structure for SMSV2 on GCP with Terraform
+# Multi-Deployment Customer Edge (CE) Solutions Using Terraform on Google Cloud
 
-This repository follows a specific folder naming structure to organize various configurations for different setups of SMSV2 on Google Cloud Platform (GCP) with Terraform. Below is an explanation of the naming conventions and guidelines for users to understand the structure and its usage.
+This repository contains multiple Terraform configurations to deploy **Customer Edge (CE)** instances in Google Cloud, each designed to cater to different use cases. The configurations are organized into three distinct folders based on the deployment method, which are as follows:
 
-## Folder Naming Structure
+- **CE with Custom Proxy + NAT**
+- **CE with Public SLO IP**
+- **CE with Manual XC Objects (Old Method)**
 
-The folder naming structure is designed to clearly represent the configuration setup for each environment, such as the number of nodes, network configuration, and specific setup details. The format follows:
+Each folder contains a specific Terraform configuration that deploys a high-availability 3-node Customer Edge (CE) solution in Google Cloud, with varying requirements for network configuration and proxy setups.
 
-`<node-count> N - <nic-count> NIC - <configuration-details>`
+## Folder Structure
 
-Where:
-- `<node-count>`: The number of nodes (either 1N or 3N) involved in the setup.
-- `<nic-count>`: The number of NICs (Network Interface Cards), which could be 1NIC or 2NIC.
-- `<configuration-details>`: Additional configuration details specifying network setups such as NAT, dynamic/static public IP, and proxy. Examples include:
-  - `NAT`: Network Address Translation enabled.
-  - `DYN`: Dynamic/Automatically alloted public IP setup.
-  - `STATIC`: Static public IP setup.
-  - `NAT-PROXY`: Network Address Translation with Proxy configuration.
+```plaintext
+.
+├── ce-with-custom-proxy-nat/
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── provider.tf
+│   ├── terraform.tfvars
+│   ├── variables.tf
+│   ├── README.md
+│   └── ...
+├── ce-with-public-slo-ip/
+│   ├── main.tf
+│   ├── outputs.tf
+│   ├── provider.tf
+│   ├── terraform.tfvars
+│   ├── variables.tf
+│   ├── README.md
+│   └── ...
+└── ce-with-manual-xc-objects/
+    ├── main.tf
+    ├── outputs.tf
+    ├── provider.tf
+    ├── terraform.tfvars
+    ├── variables.tf
+    ├── README.md
+    └── ...
 
-### Example Breakdown:
+## What Each Folder Contains
 
-#### `3N-1NIC-NAT`
+### 1. **`ce-with-custom-proxy-nat/`**
+This folder contains the Terraform configuration for deploying **Customer Edge (CE)** with custom proxy settings and NAT functionality. The instances in this setup are configured with network interfaces and access through a proxy server. 
+- **Use case**: Choose this configuration if your infrastructure requires custom proxy configurations for HTTP traffic and NAT for outbound traffic.
+- **Key Features**:
+  - Custom proxy settings available in `terraform.tfvars`.
+  - Assumption here is that the customer end NAT is configured to route outbound traffic through an HTTP proxy.
 
-- **3N**: Refers to a setup with 3 nodes.
-- **1NIC**: Indicates that there is 1 Network Interface Card (NIC) attached to each node.
-- **NAT**: Denotes that the nodes are configured with Network Address Translation (NAT) for internet access.
+### 2. **`ce-with-public-slo-ip/`**
+This folder contains the Terraform configuration for deploying **Customer Edge (CE)** with public IP addresses assigned to the **SLO network interfaces**. The IPs are managed either through new static IPs (google compute addess ) or existing IPs provided.
+- **Use case**: Choose this configuration if you need public IPs directly assigned to the SLO network interfaces for external communication.
+- **Key Features**:
+  - Public IP assignment to SLO interfaces, either dynamically (new IPs) or statically (existing IPs).
+  - Suitable for deployments requiring internet-facing interfaces with direct IP exposure. ( NO NAT )
 
-#### `1N-2NIC-DYN`
+### 3. **`ce-with-manual-xc-objects/` (Old Method)**
+This folder contains the Terraform configuration for the **Customer Edge (CE)** with **manual XC objects** configuration. This method involves creating XC objects and tokens manually and managing them outside the Terraform configuration.
+- **Use case**: Choose this configuration if you prefer or need to manage XC objects and tokens manually.
+- **Key Features**:
+  - Manual token and XC object management.
+  - Suitable for more legacy deployments that rely on manually configured XC objects.
 
-- **1N**: Refers to a single-node setup.
-- **2NIC**: Indicates that there are 2 NICs attached to the node.
-- **DYN**: Denotes that the node is configured with a dynamic/Automatically alloted public IP (without NAT).
+## How to Choose the Right Configuration
 
-#### `3N-2NIC-NAT-PROXY`
+When selecting the configuration to use, consider your environment and specific requirements:
 
-- **3N**: Refers to a setup with 3 nodes.
-- **2NIC**: Indicates that there are 2 NICs attached to each node.
-- **NAT-PROXY**: Denotes that the nodes are configured with Network Address Translation (NAT) and a proxy for internet access.
+- **Use `ce-with-custom-proxy-nat/`**:
+  - If you have a network proxy in place and need NAT functionality.
+  - This is ideal for environments with strict security or internal routing policies that require proxy servers.
 
-#### `1N-1NIC-STATIC`
+- **Use `ce-with-public-slo-ip/`**:
+  - If you need public IP addresses for your SLO interfaces, either new or pre-existing.
+  - This configuration is suitable for majority of the setups.
 
-- **1N**: Refers to a single-node setup.
-- **1NIC**: Indicates that there is 1 NIC attached to the node.
-- **STATIC**: Denotes that the node is configured with a static public IP (without NAT).
-
-This naming convention helps users easily identify the configuration details based on the folder name.
-
-
-## Folder Details
-
-Each folder contains configurations for specific environments based on the node and NIC setup. The folders are organized as follows:
-
-- **3N-1NIC-NAT**: Configurations for a 3-node setup with 1 NIC and NAT enabled.
-- **3N-1NIC-DYN**: Configurations for a 3-node setup with 1 NIC and dynamic/Automatically alloted public IP, without NAT.
-- **3N-1NIC-NAT-PROXY**: Configurations for a 3-node setup with 1 NIC, NAT, and a proxy.
-- **3N-1NIC-STATIC**: Configurations for a 3-node setup with 1 NIC and static public IP, without NAT.
-- **3N-2NIC-NAT**: Configurations for a 3-node setup with 2 NICs and NAT enabled.
-- **3N-2NIC-DYN**: Configurations for a 3-node setup with 2 NICs and dynamic/Automatically alloted  public IP, without NAT.
-- **3N-2NIC-NAT-PROXY**: Configurations for a 3-node setup with 2 NICs, NAT, and a proxy.
-- **3N-2NIC-STATIC**: Configurations for a 3-node setup with 2 NICs and static public IP, without NAT.
-- **1N-1NIC-NAT**: Configurations for a single node setup with 1 NIC and NAT enabled.
-- **1N-1NIC-DYN**: Configurations for a single node setup with 1 NIC and dynamic/Automatically alloted  public IP, without NAT.
-- **1N-1NIC-NAT-PROXY**: Configurations for a single node setup with 1 NIC, NAT, and a proxy.
-- **1N-1NIC-STATIC**: Configurations for a single node setup with 1 NIC and static public IP, without NAT.
-- **1N-2NIC-NAT**: Configurations for a single node setup with 2 NICs and NAT enabled.
-- **1N-2NIC-DYN**: Configurations for a single node setup with 2 NICs and dynamic/Automatically alloted  public IP, without NAT.
-- **1N-2NIC-NAT-PROXY**: Configurations for a single node setup with 2 NICs, NAT, and a proxy.
-- **1N-2NIC-STATIC**: Configurations for a single node setup with 2 NICs and static public IP, without NAT.
+- **Use `ce-with-manual-xc-objects/` (Old Method)**:
+  - If you prefer to manually manage XC objects and tokens.
+  - This configuration is an old config which was created before SMSV2 Volterra resource was present. Can be used if you only want to automate cloud but want to stick with manual XC objects.
 
 
-## How to Use
+## Generic Structure of Each Folder
 
-### Setting Up on Google Cloud Platform (GCP)
+Each folder follows a consistent structure to ensure ease of use and maintainability. The main files in each folder are:
 
-1. **Prerequisites**: Ensure you have access to a GCP account and have the [Google Cloud SDK](https://cloud.google.com/sdk) installed on your local machine.
-   
-2. **Terraform Setup**: This repository contains Terraform configurations to set up the described environments. You need to install [Terraform](https://www.terraform.io/downloads.html) to run the scripts.
+- **`main.tf`**: Contains the main Terraform configuration for resources such as Compute Engine instances, network interfaces, and site tokens.
+- **`outputs.tf`**: Defines the output values, such as allocated public IPs, to be used for validation or further configuration.
+- **`provider.tf`**: Specifies the providers for Google Cloud (GCP) and Volterra. This file is essential for connecting to the respective platforms.
+- **`terraform.tfvars`**: Contains the user-specific values to customize the Terraform configuration, such as project ID, region, network settings, etc.
+- **`variables.tf`**: Defines the input variables, ensuring flexibility in how the configuration is customized and applied.
+- **`README.md`**: Describes the folder's purpose and gives deployment instructions.
 
-3. **Environment Configuration**:
-   - Navigate to the folder corresponding to the configuration you want to deploy (e.g., `3 NODE - 1 NIC - SMSV2 - GCP - CE - WITH NAT`).
-   - Ensure your Terraform configuration matches your GCP environment (e.g., project ID, region).
-   - Ensure that you have valid API Certificate from Distributed cloud and the passowrd.
-   - Download the configuration files in folder of your choice
-   - Edit terraform.tfvars to suite your configuration and environment 
+## Deployment Guide
 
-4. **Run Terraform**:
-   - Initialize the Terraform working directory:
-     ```bash
-     terraform init
-     ```
-   - Apply the configuration:
-     ```bash
-     terraform apply
-     ```
+Each folder includes a **`README.md`** file with specific instructions on how to deploy the infrastructure:
 
-5. **Monitor and Modify**:
-   - After running `terraform apply`, Terraform will create the required infrastructure. You can monitor the setup and modify configurations as needed.
+Refer to the individual folder `README.md` files for more detailed steps and explanations based on the deployment method you choose.
 
-### Folder-Specific Considerations
+## Conclusion
 
-- **With NAT**: If the folder has `WITH NAT` in its name, the nodes are configured to route traffic through a NAT gateway ( already existing in customer architecture ) to access external resources. No Public IP is alloted to the nodes here.
-- **Static or Dynamic Public IP**: Folders with `STATIC PUBLIC IP` use a static IP for external connectivity, while `DYNAMIC PUBLIC IP` uses an IP that is alloted automatically by GCP.
-- **Proxy Configurations**: Folders with `PROXY` assumes a proxy setup for routing traffic between the internal network and external resources.  
+This repository offers flexible Terraform configurations to deploy high-availability Customer Edge (CE) clusters in Google Cloud, each designed for specific use cases, such as proxy setups, public IP assignments, and manual XC object management. Choose the configuration that best fits your environment and deploy your infrastructure with ease.
+
+If you encounter any issues or need further assistance, feel free to consult the [documentation](https://docs.cloud.f5.com/docs-v2/multi-cloud-network-connect/how-to/site-management/deploy-sms-gcp-clickops) or reach out to the support team.
+
 
