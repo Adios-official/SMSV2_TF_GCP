@@ -1,4 +1,4 @@
-# Customer Edge (CE) with Public IP Assignment and No NAT
+# Customer Edge (CE) with Public IP Assignment ( Usable for All normal use cases )
 
 ## Overview
 
