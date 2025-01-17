@@ -4,7 +4,7 @@
 
 # GCP Project ID - unique project ID from GCP that can be a combination of letters, numbers, and hyphens
 # CHANGE THIS
-project_id = "f5-gcs-6556-gs-cot04"
+project_id = "xxxxxxxx"
 
 # GCP Region
 # CHANGE THIS
@@ -19,13 +19,13 @@ region = "europe-west3" # Change as necessary
 ##############################################################################################################################
 cluster_name    = "adios-tf-3node-2nic"              # Name for the customer Edge ( Each node will take this name followed by suffix like node-1, node-2 etc. )
 instance_type   = "n1-standard-4"                                              # Change as necessary
-image           = "projects/f5-gcs-6556-gs-cot04/global/images/adios-ce-image" # Use a suitable image
+image           = "projects/xxxxxxx/global/images/xc-ce-image" # Use a suitable image
 disk_size       = 80                                                           # Disk size in GB. 80 GB is minimum.
 # Directly add your public key. This would be SSH key for Command line access to the nodes.
-ssh_public_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbddme6xpnBgi4WU48iZQ34yQ5/ItN5oPcAjYN3rpXfhbZjBClBgTeLqD6AqB52LsBCs8VLdLXw7HC4LuQRAYg/+cIzSYWbYewETcAG7Te8sVEKL3Qc9kSkIkLN64+5yF8Gh4DYEd9ZHxfrBbFO2pO1yTil+EtO56kudaCWEurKI2KoIW8APNnTPL/Qb33YA/x8Xt6bHPSZEOyUX0WpyH1sKAK0yiRC8jTXodTPhVFQLLPAdRfHznc5T7IUcmUwZr9VzsFyhO4BZ7gM/azVcrwIPvbITyvnZxh8vxWtP66tqtlel89vpUUTdwi/4aOMLnmn4cx2fp8MrWJcE2SBlrL gcp-adios-key"  
+ssh_public_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQ....your-key-here"  
 num_nics        = 2                               # Use 1 for single NIC or 2 for dual NIC. If you need dual NIC, please fill section  # VPC Network for SLI
 num_nodes       = 3                               # Choose if you need a Single Node CE or an HA CE with 3 Nodes
-tags            = ["f5ce", "adios"]               # Tags you would like to add to the nodes in the CE cluster. 
+tags            = ["TAG-1", "TAG-2"]               # Tags you would like to add to the nodes in the CE cluster. 
 
 
 
@@ -97,7 +97,7 @@ az_name = [
 
 
 # These are arguments to supply your api creds for interacting with the XC Tenant
-api_p12_file = "sdc-support.console.ves.volterra.io.api-creds.p12"
-api_url = "https://sdc-support.console.ves.volterra.io/api"
+api_p12_file = "XXXXXXXX.console.ves.volterra.io.api-creds.p12"
+api_url = "https://XXXXXXXX.console.ves.volterra.io/api"
 
 

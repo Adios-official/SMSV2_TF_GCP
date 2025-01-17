@@ -39,7 +39,7 @@ token = "XXXXXXXXXXXXXXX........"
 
 # Tags you would like to add to the nodes in the CE cluster. 
 # CHANGE THIS
-tags = ["f5ce", "adios"]
+tags = ["TAG-1", "TAG-2"]
 
 # Directly add your public key. This would be SSH key for Command line access to the nodes.
 # CHANGE THIS
