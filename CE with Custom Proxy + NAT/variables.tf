@@ -75,11 +75,11 @@ variable "tags" {
 }
 
 
-# Uncomment PROXY only if you have an enterprise proxy in your Architecture. Please discuss with the F5 Engineer.
-#variable "proxy" {
-#  description = "Proxy to be written to user data."
-#  type        = string
-#}
+#PROXY only if you have an enterprise proxy in your Architecture. Please discuss with the F5 Engineer.
+variable "proxy" {
+  description = "Proxy to be written to user data."
+  type        = string
+}
 
 ##############################################################################################################################
 # BLOCK 3 #  NETWORKING AND NETWORK INTERFACES FOR NODES
@@ -110,42 +110,9 @@ variable "sli_subnetwork" {
   type        = list(string)
 }
 
-##############################################################################################################################
-# BLOCK 4 # PUBLIC IP ASSIGNMENT VARIABLES
-##############################################################################################################################
-
-variable "ip_configuration" {
-  description = "IP configuration, which includes public IP assignment type and existing public IPs."
-  type = object({
-    public_ip_assignment_type = string
-    existing_public_ips = list(string)
-  })
-  default = {
-    public_ip_assignment_type = "STATIC_NEW"
-    existing_public_ips = []
-  }
-
-  validation {
-    condition = (
-      var.ip_configuration.public_ip_assignment_type != "STATIC_NEW" ||
-      length(var.ip_configuration.existing_public_ips) == 0
-    )
-    error_message = "If public_ip_assignment_type is 'STATIC_NEW', existing_public_ips must be empty."
-  }
-}
-
-variable "network_tier" {
-  description = "Standard and Premium network tiers refer to the different levels of service that can be used for traffic routing through Google’s network"
-  type        = string
-
-  validation {
-    condition     = var.network_tier == "STANDARD" || var.network_tier == "PREMIUM"
-    error_message = "The network_tier must be either 'STANDARD' or 'PREMIUM'."
-  }
-}
 
 ##############################################################################################################################
-# BLOCK 5 # AVAILABILITY ZONE DETAILS , TENANT DETAILS FROM DISTRIBUTED CLOUD
+# BLOCK 4 # AVAILABILITY ZONE DETAILS , TENANT DETAILS FROM DISTRIBUTED CLOUD
 ##############################################################################################################################
 variable "api_p12_file" {
   type        = string

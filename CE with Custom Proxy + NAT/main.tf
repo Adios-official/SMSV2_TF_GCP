@@ -38,16 +38,6 @@ resource "volterra_token" "smsv2-token" {
   
 
 ##############################################################################################################################
-# BLOCK 3 # Reserve Static IPs if ip_assignment_type = "STATIC_NEW" and no existing_public_ips provided
-##############################################################################################################################
-
-resource "google_compute_address" "static_ips" {
-  count  = var.ip_configuration.public_ip_assignment_type == "STATIC_NEW" && length(var.ip_configuration.existing_public_ips) == 0 ? var.num_nodes : 0
-  name   = "static-ip-${count.index + 1}"
-  region = var.region
-}
-
-##############################################################################################################################
 # BLOCK 3 # CREATING THE CE INSTANCE(S) IN GCP
 ##############################################################################################################################
 resource "google_compute_instance" "instance" {
@@ -69,10 +59,7 @@ resource "google_compute_instance" "instance" {
     content {
       network    = var.slo_vpc_network 
       subnetwork = element(var.slo_subnetwork, count.index)   # Dynamic Subnetwork assignment
-      access_config {
-      nat_ip = length(var.ip_configuration.existing_public_ips) > 0 ? var.ip_configuration.existing_public_ips[count.index] : google_compute_address.static_ips[count.index].address      
-      network_tier = var.network_tier
-      }
+      # No access_config block means no public IP
     }
   }
 
@@ -95,6 +82,7 @@ resource "google_compute_instance" "instance" {
       - path: /etc/vpm/user_data
         content: |
           token: ${volterra_token.smsv2-token.id}
+          proxy : ${var.proxy}
         owner: root
         permissions: '0644'
       EOT

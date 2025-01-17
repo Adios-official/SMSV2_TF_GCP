@@ -46,22 +46,6 @@ slo_subnetwork = [
   "slo-subnet-3"
 ]  
 
-#Choose how you want Public IP to be assigned to your nodes
-#network_tier = "PREMIUM"  # Premium tier for better performance and optimized routing.
-#network_tier = "STANDARD" # Standard tier for cost-effective routing with basic service.
-
-network_tier = "STANDARD"  #The network_tier must be either 'STANDARD' or 'PREMIUM'.
-
-#STATIC_NEW      - For New Public IPs to be alloted to SLO Network interfaces (generated using the google compute address and allocated during code run)
-#STATIC_EXISTING - For Using your Existing Public IPs to be alloted to SLO Network interfaces (pre-allocated Public IPs and provided manually)
-ip_configuration = {
-  public_ip_assignment_type = "STATIC_EXISTING"
-  # Provide existing IPs if available, or leave empty if you want to have static IPs reserved during code run using google compute address resource.
-  # Make sure the reserved IP matches with Network Tier
-  existing_public_ips = ["35.207.150.253","35.207.152.167","35.207.179.126"]  # Must be empty for STATIC_NEW.
-}
-  
-
 ##############################################################################################################################
 # BLOCK 3 #  NETWORKING AND NETWORK INTERFACES FOR NODES
 # 3.2 SLI CONFIG 
@@ -92,7 +76,16 @@ az_name = [
 ]
 
 ##############################################################################################################################
-# BLOCK 4 # API CREDENTIAL DETAILS , TENANT DETAILS FROM DISTRIBUTED CLOUD
+# BLOCK 5 # PROXY SETTINGS
+##############################################################################################################################
+# This will feed into the CE as outbound proxy for connections 
+# Used for initial CE provisioning 
+#( Uncomment PROXY only if you have an enterprise proxy in your Architecture. Please discuss with the F5 Engineer.)
+proxy = "http://your-proxy-here:port"
+
+
+##############################################################################################################################
+# BLOCK 6 # API CREDENTIAL DETAILS , TENANT DETAILS FROM DISTRIBUTED CLOUD
 ##############################################################################################################################
 
 

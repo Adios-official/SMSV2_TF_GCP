@@ -92,7 +92,7 @@ az_name = [
 ]
 
 ##############################################################################################################################
-# BLOCK 4 # API CREDENTIAL DETAILS , TENANT DETAILS FROM DISTRIBUTED CLOUD
+# BLOCK 5 # API CREDENTIAL DETAILS , TENANT DETAILS FROM DISTRIBUTED CLOUD
 ##############################################################################################################################
 
 

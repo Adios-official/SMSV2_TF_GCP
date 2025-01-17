@@ -75,12 +75,6 @@ variable "tags" {
 }
 
 
-# Uncomment PROXY only if you have an enterprise proxy in your Architecture. Please discuss with the F5 Engineer.
-#variable "proxy" {
-#  description = "Proxy to be written to user data."
-#  type        = string
-#}
-
 ##############################################################################################################################
 # BLOCK 3 #  NETWORKING AND NETWORK INTERFACES FOR NODES
 # 3.1 SLO CONFIG 

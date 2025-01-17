@@ -48,7 +48,7 @@ resource "google_compute_address" "static_ips" {
 }
 
 ##############################################################################################################################
-# BLOCK 3 # CREATING THE CE INSTANCE(S) IN GCP
+# BLOCK 4 # CREATING THE CE INSTANCE(S) IN GCP
 ##############################################################################################################################
 resource "google_compute_instance" "instance" {
   count        = var.num_nodes # Dynamically create instances based on num_nodes
