@@ -96,7 +96,7 @@ Update the `terraform.tfvars` file with:
 
 - Ensure the subnets and availability zones align with your desired architecture.
 - For dual NIC setups, both `slo_subnetwork` and `sli_subnetwork` must have values for each node.
-- Proxy settings are optional and should be configured only if required by your network setup.
+- Proxy settings should be configured only if required by your network setup.
 - High Availability (HA) mode automatically enables when `num_nodes` is set to 3.
 - **No more than one network interface for a node should be on the same subnet**: In GCP, it is recommended to avoid placing multiple interfaces for the same node on the same subnet. This ensures proper network segmentation, prevents routing issues, and aligns with GCP's best practices for isolating traffic between different interfaces.
 
