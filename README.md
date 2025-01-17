@@ -36,7 +36,7 @@ Each folder contains a specific Terraform configuration that deploys a high-avai
     ├── variables.tf
     ├── README.md
     └── ...
-
+```
 ## What Each Folder Contains
 
 ### 1. **`ce-with-custom-proxy-nat/`**
