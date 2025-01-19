@@ -54,7 +54,7 @@ variable "num_nics" {
 
   validation {
     condition     = var.num_nics == 1 || var.num_nics == 2
-    error_message = "The number of nodes must be either 1 or 2. Any other value is not supported in this code."
+    error_message = "The number of Interfaces must be either 1 or 2. Any other value is not supported in this code."
   }
 }
 
