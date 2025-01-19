@@ -65,7 +65,7 @@ variable "num_nodes" {
 
   validation {
     condition     = var.num_nodes == 1 || var.num_nodes == 3
-    error_message = "The number of nodes must be either 1 or 3. The value '2' is not supported."
+    error_message = "The number of nodes must be either 1 or 3. The value '2' or any other value is not supported."
   }
 }
 
