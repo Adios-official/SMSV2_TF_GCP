@@ -30,7 +30,6 @@ Each folder ( Except for CE with Manual XC Objects (Old Method) ) contains a spe
 │   └── ...
 └── ce-with-manual-xc-objects/
     ├── main.tf
-    ├── outputs.tf
     ├── provider.tf
     ├── terraform.tfvars
     ├── variables.tf
