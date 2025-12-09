@@ -235,8 +235,8 @@ deployment_summary = {
 * **Fix:**
     1.  **Check your egress path (NAT):** If `public_ip_assignment_type` is `"NONE"`, your private subnet (where the SLO NIC lives) **must** have an egress route to the internet (e.g., via a **GCP Cloud Router/NAT Gateway**).
     2.  **Check GCP Firewalls (Ingress/Egress):** If you set `create_firewall_rules = false` (bypassing Block 4), you must ensure your existing firewall rules allow:
-        * **Outbound (Egress)** traffic to the internet (all ports/protocols for Control Plane).
-        * **Inbound (Ingress)** traffic on TCP 443 and UDP 4500 from the F5 XC service ranges.
+        * **Outbound (Egress)** traffic to the REs (all ports/protocols for Control Plane).
+        * **Inbound (Ingress)** traffic from the REs on TCP 80, 443 and UDP 4500 , 123
     3.  **Test Connectivity:** SSH into the Compute Engine instance using your `ssh_public_key`. Once inside, run `curl -v https://google.com`. If this fails or times out, your GCP networking (Routes, Firewalls, or NAT Gateway) is not configured correctly for egress.
 
 **Q: `terraform plan` fails with an "Invalid cluster_name" error.**
