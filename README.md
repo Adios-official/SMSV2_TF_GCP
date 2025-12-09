@@ -164,7 +164,55 @@ This will display a structured object containing key information, such as:
 * The F5 XC Virtual Site Name (if created)
 * A summary of your chosen inputs (like deployment_model, node_count, etc.)
 
-## Troubleshooting & FAQ
+### 2. Sample Deployment Outputs
+
+#### Sample Output 1: VSITE Model (3 Nodes, Dual-NIC)
+This model deploys 3 separate F5 XC site objects grouped under one Virtual Site.
+
+```bash
+terraform output deployment_summary
+
+deployment_summary = {
+  "aws_instance_azs" = [
+    "europe-west3-a",
+    "europe-west3-b",
+    "europe-west3-c",
+  ]
+  "aws_region" = "europe-west3"
+  "cluster_name" = "gcp-vsite-test"
+  "created_security_groups" = "F5 XC Firewall Rules Created"
+  "deployment_model" = "vsite"
+  "f5_xc_site_names" = [
+    "gcp-vsite-test-1",
+    "gcp-vsite-test-2",
+    "gcp-vsite-test-3",
+  ]
+  "f5_xc_virtual_site_name" = "gcp-vsite-test-vsite"
+  "gcp_instance_ids" = [
+    "[https://www.googleapis.com/compute/v1/projects/gcp-proj/zones/europe-west3-a/instances/gcp-vsite-test-node-1](https://www.googleapis.com/compute/v1/projects/gcp-proj/zones/europe-west3-a/instances/gcp-vsite-test-node-1)",
+    "[https://www.googleapis.com/compute/v1/projects/gcp-proj/zones/europe-west3-b/instances/gcp-vsite-test-node-2](https://www.googleapis.com/compute/v1/projects/gcp-proj/zones/europe-west3-b/instances/gcp-vsite-test-node-2)",
+    "[https://www.googleapis.com/compute/v1/projects/gcp-proj/zones/europe-west3-c/instances/gcp-vsite-test-node-3](https://www.googleapis.com/compute/v1/projects/gcp-proj/zones/europe-west3-c/instances/gcp-vsite-test-node-3)",
+  ]
+  "nic_count" = 2
+  "node_count" = 3
+  "private_ips_sli" = [
+    "10.10.1.100",
+    "10.10.2.100",
+    "10.10.3.100",
+  ]
+  "private_ips_slo" = [
+    "10.0.1.79",
+    "10.0.2.139",
+    "10.0.3.54",
+  ]
+  "public_ip_mode" = "CREATE_IP"
+  "public_ips_slo" = [
+    "34.120.150.10",
+    "35.200.100.50",
+    "34.130.140.90",
+  ]
+}
+```
 
 ## Troubleshooting & FAQ
 
