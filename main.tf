@@ -5,6 +5,7 @@
 # before Terraform attempts to create any resources.
 ################################################################################
 
+### Deployment Model Consistency ###
 check "valid_node_count_for_model" {
   assert {
     condition = (
@@ -15,6 +16,7 @@ check "valid_node_count_for_model" {
   }
 }
 
+### Public IP Assignment Rules ###
 check "valid_ip_configuration" {
   assert {
     condition = (
@@ -27,7 +29,7 @@ check "valid_ip_configuration" {
   }
 }
 
-# CHECK FOR LIST LENGTHS 
+### Network List Lengths ###
 check "valid_list_lengths" {
   assert {
     condition = (
@@ -44,6 +46,7 @@ EOT
   }
 }
 
+### F5 XC Regional Edge (RE) Selection ###
 check "valid_re_configuration" {
   assert {
     condition = (
@@ -54,6 +57,7 @@ check "valid_re_configuration" {
   }
 }
 
+### GCP Tag Formatting ###
 check "valid_gcp_tags" {
   assert {
     # Check 1: Ensure all tags are lowercase. GCP tags must be lowercase.
@@ -61,6 +65,50 @@ check "valid_gcp_tags" {
       for tag in var.tags : can(regex("^[a-z0-9-]{1,63}$", tag))
     ])
     error_message = "Invalid GCP tags: All tags must be lowercase, contain only alphanumeric characters or hyphens (-), and be between 1 and 63 characters long. Uppercase letters are not allowed."
+  }
+}
+
+### Service Account Consistency ###
+check "service_account_consistency" {
+  assert {
+    condition = (
+      (var.service_account_email != "" && length(var.gcp_service_account_scopes) > 0) ||
+      (var.service_account_email == "" && length(var.gcp_service_account_scopes) == 0)
+    )
+    error_message = "Service Account configuration error: If 'service_account_email' is provided, 'gcp_service_account_scopes' must contain at least one scope. If 'service_account_email' is blank, 'gcp_service_account_scopes' must be an empty list ([])."
+  }
+}
+
+### VPC Network Name Check ###
+check "network_names_must_be_set" {
+  assert {
+    condition = (
+      var.slo_vpc_network != "" &&
+      (var.num_nics == 1 || var.sli_vpc_network != "")
+    )
+    error_message = "Network Configuration Error: 'slo_vpc_network' must be set. If 'num_nics' is 2, 'sli_vpc_network' must also be set."
+  }
+}
+
+### Static Route Next Hop Check ###
+check "static_route_next_hop_required" {
+  assert {
+    condition = (
+      (var.vrf_config.slo_network_mode != "static" || (length(var.vrf_config.static_route_prefixes_slo) == 0 || var.vrf_config.static_route_next_hop_slo != "")) &&
+      (var.vrf_config.sli_network_mode != "static" || (length(var.vrf_config.static_route_prefixes_sli) == 0 || var.vrf_config.static_route_next_hop_sli != ""))
+    )
+    error_message = "Static Route Error: If 'slo_network_mode' or 'sli_network_mode' is 'static' and prefixes are provided, the corresponding 'static_route_next_hop' field cannot be empty."
+  }
+}
+
+### SSH Key Format Check ###
+check "valid_ssh_public_key_format" {
+  assert {
+    condition = (
+      var.ssh_public_key == "" || 
+      can(regex("^(ssh-rsa|ecdsa-sha2-nistp256|ssh-ed25519) [A-Za-z0-9+/=]+.*$", var.ssh_public_key))
+    )
+    error_message = "Invalid SSH public key format: Key must start with 'ssh-rsa', 'ecdsa-sha2-nistp256', or 'ssh-ed25519' followed by the key content. Leave blank if optional."
   }
 }
 ##############################################################################################################################
@@ -144,11 +192,27 @@ resource "google_compute_instance" "instance" {
     }
   }
   
-  # --- METADATA (Token Selection Logic Applied) ---
-  metadata = {
-    ssh-keys     = "admin:${var.ssh_public_key}"
-    VmDnsSetting = "ZonePreferred"
-    user-data    = <<-EOT
+
+# --- METADATA (Security, Troubleshooting, and Token Injection) ---
+  metadata = merge(
+    {
+      # Networking: Prioritize zonal DNS for consistency
+      VmDnsSetting               = "ZonePreferred"
+      
+      # Security: Enable OS Login to centralize access via IAM roles
+      "enable-oslogin"           = "TRUE" 
+      
+      # Security: Prevent project-wide keys from being injected
+      "block-project-ssh-keys"   = "TRUE" 
+      
+      # Security: Disable legacy metadata endpoint access to prevent token theft
+      "disable-legacy-endpoints" = "TRUE"
+      
+      # Operations: Enable serial port for out-of-band debugging (HIGHLY RECOMMENDED)
+      "serial-port-enable"       = "TRUE"
+
+      # F5 XC Initialization: User-data to inject the registration token
+      user-data = <<-EOT
       #cloud-config
       write_files:
       - path: /etc/vpm/user_data
@@ -158,6 +222,23 @@ resource "google_compute_instance" "instance" {
         owner: root
         permissions: '0644'
       EOT
+    },
+    # Use a 'for' expression to build a temporary map that is either empty ({}) or contains the ssh-keys entry.
+    # This avoids adding any placeholder key.
+    {
+      for key, value in { "ssh-keys" = "admin:${var.ssh_public_key}" } : key => value
+      if var.ssh_public_key != ""
+    }
+  )
+
+  # The block is created if the user provides an email, otherwise it is omitted.
+  dynamic "service_account" {
+    for_each = var.service_account_email != "" ? [1] : []
+    content {
+      email  = var.service_account_email
+      # Use the user-defined scopes
+      scopes = var.gcp_service_account_scopes 
+    }
   }
 
   tags = concat(
@@ -320,7 +401,64 @@ dynamic "interface_list" {
               }
             }
           }
+        
         }
+      }
+    }
+  }
+
+local_vrf {
+    
+    # --- SLI VRF Configuration (Site Local Inside) ---
+    default_sli_config = var.vrf_config.sli_network_mode == "default" ? true : null
+    
+    dynamic "sli_config" {
+      for_each = var.vrf_config.sli_network_mode == "static" ? [1] : []
+      content {
+        # Optional DNS setting (omitted if blank)
+        nameserver = var.vrf_config.nameserver_sli != "" ? var.vrf_config.nameserver_sli : null
+        
+        # Static Route Choice:
+        no_static_routes = var.vrf_config.static_route_prefixes_sli == [] ? true : null
+        
+        dynamic "static_routes" {
+          for_each = var.vrf_config.static_route_prefixes_sli != [] ? [1] : []
+          content {
+            static_routes {
+              ip_prefixes = var.vrf_config.static_route_prefixes_sli
+              ip_address = var.vrf_config.static_route_next_hop_sli
+              attrs = [ "ROUTE_ATTR_INSTALL_HOST","ROUTE_ATTR_INSTALL_FORWARDING" ]
+            }
+          }
+        }
+        no_v6_static_routes = true 
+        
+      }
+    }
+    
+    # --- SLO VRF Configuration (Site Local Outside) ---
+    default_config = var.vrf_config.slo_network_mode == "default" ? true : null
+    
+    dynamic "slo_config" {
+      for_each = var.vrf_config.slo_network_mode == "static" ? [1] : []
+      content {
+        # Optional DNS setting (omitted if blank)
+        nameserver = var.vrf_config.nameserver_slo != "" ? var.vrf_config.nameserver_slo : null
+        
+        # Static Route Choice:
+        no_static_routes = var.vrf_config.static_route_prefixes_slo == [] ? true : null
+
+        dynamic "static_routes" {
+          for_each = var.vrf_config.static_route_prefixes_slo != [] ? [1] : []
+          content {
+            static_routes {
+              ip_prefixes = var.vrf_config.static_route_prefixes_slo
+              ip_address = var.vrf_config.static_route_next_hop_slo
+              attrs = [ "ROUTE_ATTR_INSTALL_HOST","ROUTE_ATTR_MERGE_ONLY" ]
+            }
+          }
+        }
+        no_v6_static_routes = true 
       }
     }
   }
