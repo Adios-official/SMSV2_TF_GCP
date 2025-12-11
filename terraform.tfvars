@@ -33,7 +33,7 @@ deployment_model = "vsite"
 #-------------------------------------------------------------------------------
 
 # Base name for the site(s) and GCP resources. Must be a valid DNS-1035 label.
-cluster_name = "gcp-ha-site-example"
+cluster_name = "example-gcp-site-01"
 
 # Number of CE nodes to deploy.
 # - If deployment_model = "cluster", must be 1 or 3.
@@ -58,7 +58,7 @@ primary_re_name = "ves-io-stockholm"
 ################################################################################
 
 # The GCP project ID where nodes and networks reside.
-project_id = "gcp-f5xc-deployment-project"
+project_id = "gcp-f5xc-deployment-project-id"
 
 # GCP Region where resources will be deployed
 region = "europe-west3"
@@ -69,15 +69,17 @@ instance_type = "n2-standard-8"
 
 # Full Location to the Custom GCP Image for the F5 XC CE nodes.
 # Must be a valid image path (e.g., "projects/PROJECT_ID/global/images/IMAGE_NAME")
-image = "projects/gcp-f5xc-deployment-project/global/images/f5xc-ce-image-v2025"
+image = "projects/gcp-f5xc-deployment-project-id/global/images/f5xc-ce-image-v2025"
 
 # Root disk size in GB (120 GB is minimum)
 disk_size = 120
 
-# SSH public key content for injecting into instance metadata (used for access).
-ssh_public_key = "ssh-rsa AAAA...my-public-key-content...gcp-deploy-key"
+# OPTIONAL : SSH public key content (used for access).
+# WARNING: Replace with your actual public key content if direct SSH access is needed.
+ssh_public_key = "ssh-rsa AAAA...your-public-key-content...gcp-deploy-key"
 
-# Custom network tags to apply to all created GCP resources
+# OPTIONAL : Custom network tags to apply to all created GCP resources
+#tags = ["tag-1", "tag-2"]
 tags = ["prod-env", "f5xc-ce"]
 
 ################################################################################
@@ -133,5 +135,55 @@ ip_configuration = {
   existing_public_ips = [] 
 }
 
+################################################################################
+# 5. GCP FIREWALL RULES CONFIGURATION (Optional) leave as is if not used
+################################################################################
 # Firewall Rule Switch: true to create default F5 XC ingress/egress rules, false to skip.
-create_firewall_rules = true
+create_firewall_rules = false
+
+# NOTE ON FIREWALL RULES:
+# These ingress/egress rules (if set to true) are highly permissive and are intended 
+# only for a basic F5 XC connection establishment. They allow traffic from 
+# 0.0.0.0/0 to the CE nodes on required ports (443, 80, 4500, 123) and allow ALL 
+# outbound traffic (0.0.0.0/0). 
+# 
+# For production environments, these rules must be replaced or refined with 
+# strict Source IP Ranges (e.g., only F5 XC RE IPs) and constrained egress policies.
+
+################################################################################
+# 6. F5 XC VRF STATIC ROUTE CONFIGURATION (Optional) leave as is if not used
+################################################################################
+
+vrf_config = {
+  # SLO network mode: "default" (no custom routes/DNS) or "static"
+  slo_network_mode = "default" 
+  # SLI network mode: "default" (no custom routes/DNS) or "static"
+  sli_network_mode = "default" 
+
+  # --- SLO STATIC ROUTE CONFIG (Used if slo_network_mode = "static") ---
+  # Only one next-hop type is supported here: IP Address.
+  static_route_prefixes_slo = [] # e.g., ["10.10.0.0/16"]
+  static_route_next_hop_slo = "" # e.g., "192.168.10.1" (Next hop IP)
+  
+  # --- SLI STATIC ROUTE CONFIG (Used if sli_network_mode = "static") ---
+  static_route_prefixes_sli = [] # e.g., ["10.10.10.0/24"]
+  static_route_next_hop_sli = "" # e.g., "10.10.10.1" (Next hop IP)
+
+  # Optional DNS (Applies only if the mode is "static" and you need custom DNS)
+  nameserver_sli = "" # e.g., "1.1.1.1"
+  nameserver_slo = "" # e.g., "8.8.8.8"
+}
+
+###############################################################################
+# 7. SERVICE ACCOUNT CONFIGURATION (Optional) leave as is if not used
+################################################################################
+
+# --- SERVICE ACCOUNT (FOR VM IDENTITY) ---
+# Email address of the Service Account to attach to the VM instance. 
+# EXAMPLE FORMAT : xc-ce-sa@gcp-project-id.iam.gserviceaccount.com
+service_account_email = ""
+
+# List of scopes granted to the Service Account. This authorizes the VM to try and access APIs.
+# example : Minimal Scope: compute.readonly. (https://www.googleapis.com/auth/compute.readonly)
+# example : Highly Permissive Scope: cloud-platform.(https://www.googleapis.com/auth/cloud-platform)
+gcp_service_account_scopes = []
