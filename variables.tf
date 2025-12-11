@@ -1,5 +1,5 @@
 ################################################################################
-# 1. F5 DISTRIBUTED CLOUD (XC) API CREDENTIALS
+# 1. F5 XC API CREDENTIALS
 ################################################################################
 
 variable "api_p12_file" {
@@ -13,19 +13,8 @@ variable "api_url" {
 }
 
 ################################################################################
-# 2. DEPLOYMENT MODEL & SITE VARIABLES
+# 2. F5 XC SITE CONFIGURATION
 ################################################################################
-
-variable "deployment_model" {
-  description = "The logical deployment model: 'cluster' (standard HA site) or 'vsite' (multiple independent sites grouped by a virtual_site)."
-  type        = string
-  default     = "cluster"
-
-  validation {
-    condition     = contains(["cluster", "vsite"], var.deployment_model)
-    error_message = "The deployment_model must be either 'cluster' or 'vsite'."
-  }
-}
 
 variable "cluster_name" {
   description = "Base name for the F5 XC site(s) and GCP resources. Must be a valid DNS-1035 label."
@@ -38,10 +27,21 @@ variable "cluster_name" {
   }
 }
 
+variable "deployment_model" {
+  description = "The logical deployment model: 'cluster' (standard HA site) or 'vsite' (multiple independent sites grouped by a virtual_site)."
+  type        = string
+  default     = "cluster"
+
+  validation {
+    condition     = contains(["cluster", "vsite"], var.deployment_model)
+    error_message = "The deployment_model must be either 'cluster' or 'vsite'."
+  }
+}
+
 variable "num_nodes" {
-  description = "Number of CE nodes to create. 'cluster' model supports 1 or 3. 'vsite' model supports 1, 2, or 3."
+  description = "Number of CE nodes to create. 'cluster' model supports 1 or 3. 'vsite' model supports 1 to 8."
   type        = number
-  # Validation for this is handled by a 'check' block in main.tf
+  # Validation for count is handled by a 'check' block in main.tf
 }
 
 variable "num_nics" {
@@ -53,7 +53,6 @@ variable "num_nics" {
     error_message = "The number of NICs must be either 1 or 2."
   }
 }
-
 
 variable "re_selection_mode" {
   description = "Controls how the Regional Edge (RE) is selected: 'auto' (geo_proximity) or 'manual' (requires primary_re_name)."
@@ -71,8 +70,33 @@ variable "primary_re_name" {
   type        = string
   default     = "" # Must be empty if mode is 'auto'
 }
+
+variable "vrf_config" {
+  description = "Configuration for Site Local VRFs (SLI/SLO), including static routes and DNS."
+  type = object({
+    slo_network_mode          = string 
+    sli_network_mode          = string 
+    static_route_prefixes_slo = list(string)
+    static_route_next_hop_slo = string
+    static_route_prefixes_sli = list(string)
+    static_route_next_hop_sli = string
+    nameserver_sli            = string
+    nameserver_slo            = string
+  })
+  default = {
+    slo_network_mode = "default"
+    sli_network_mode = "default"
+    static_route_prefixes_slo = []
+    static_route_next_hop_slo = ""
+    static_route_prefixes_sli = []
+    static_route_next_hop_sli = ""
+    nameserver_sli = ""
+    nameserver_slo = ""
+  }
+}
+
 ################################################################################
-# 3. GCP COMPUTE & IMAGE VARIABLES
+# 3. GCP COMPUTE & IAM CONFIGURATION
 ################################################################################
 
 variable "project_id" {
@@ -83,6 +107,12 @@ variable "project_id" {
 variable "region" {
   description = "GCP region to deploy resources"
   type        = string
+}
+
+variable "az_name" {
+  description = "List of GCP Zones. The number of zones must match 'var.num_nodes'."
+  type        = list(string)
+  # Validation for count is handled by a 'check' block in main.tf
 }
 
 variable "instance_type" {
@@ -96,13 +126,8 @@ variable "image" {
 }
 
 variable "disk_size" {
-  description = "Root disk size in GB (replaces root_block_device object)."
+  description = "Root disk size in GB."
   type        = number
-}
-
-variable "ssh_public_key" {
-  description = "The SSH public key content (replaces key_pair name)."
-  type        = string
 }
 
 variable "tags" {
@@ -111,15 +136,27 @@ variable "tags" {
   default     = []
 }
 
-################################################################################
-# 4. GCP NETWORKING & SECURITY VARIABLES
-################################################################################
-
-variable "az_name" {
-  description = "List of GCP Zones. The number of zones must match 'var.num_nodes'."
-  type        = list(string)
-  # Validation for count is handled by a 'check' block in main.tf
+variable "ssh_public_key" {
+  description = "The SSH public key content. Required for direct 'admin' access; leave blank to skip injection."
+  type        = string
+  default     = "" # Set a default empty string
 }
+
+variable "service_account_email" {
+  description = "Email address of the Service Account to attach to the VM instance. Leave blank to skip service account attachment."
+  type        = string
+  default     = ""
+}
+
+variable "gcp_service_account_scopes" {
+  description = "List of scopes granted to the Service Account (e.g., ['https://www.googleapis.com/auth/cloud-platform']). Only effective if a service_account_email is provided."
+  type        = list(string)
+  default     = []
+}
+
+################################################################################
+# 4. GCP NETWORKING & FIREWALLS
+################################################################################
 
 variable "slo_vpc_network" {
   description = "The VPC network name for SLO (eth0) traffic."
@@ -143,7 +180,7 @@ variable "sli_subnetwork" {
 }
 
 variable "network_tier" {
-  description = "GCP Network Tier for public IP assignment ('STANDARD' or 'PREMIUM'). (Replaces security_group_config concept)."
+  description = "GCP Network Tier for public IP assignment ('STANDARD' or 'PREMIUM')."
   type        = string
 
   validation {
@@ -166,24 +203,13 @@ variable "ip_configuration" {
   }
 
   validation {
-    # We validate the type string is one of the allowed options here.
-    # The cross-variable check (length vs. num_nodes) is delegated to main.tf.
     condition = contains(["CREATE_IP", "EXISTING_IP", "NONE"], var.ip_configuration.public_ip_assignment_type)
     error_message = "public_ip_assignment_type must be one of: 'CREATE_IP', 'EXISTING_IP', or 'NONE'."
   }
 }
-
-variable "existing_public_ips" {
-  description = "List of existing Public IP addresses. Only used if 'public_ip_assignment_type = EXISTING_IP'."
-  type        = list(string)
-  default     = []
-  # Validation for this is handled by a 'check' block in main.tf
-}
-
 
 variable "create_firewall_rules" {
   description = "If true, Terraform will create the default F5 XC ingress/egress firewall rules in the VPC."
   type        = bool
   default     = true
 }
-
