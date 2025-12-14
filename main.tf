@@ -387,6 +387,8 @@ dynamic "interface_list" {
               ethernet_interface {
                 # Linux Device Name inside the VM (ens4/ens5)
                 device = interface_list.value == 0 ? "ens4" : "ens5"
+                mac = ""
+                
               }
 
               
@@ -463,9 +465,10 @@ local_vrf {
     }
   }
   
-  lifecycle {
-    ignore_changes = [ labels ]
+lifecycle {
+    ignore_changes = [labels]
   }
+
   
   # Uses static list reference to optional resources dependencies
   # If count is 0, the dependency is safely ignored by the graph solver.
@@ -486,6 +489,10 @@ resource "volterra_token" "smsv2-token" {
   site_name = volterra_securemesh_site_v2.smsv2-site-object[count.index].name
 
   depends_on = [volterra_securemesh_site_v2.smsv2-site-object]
+
+  lifecycle {
+    ignore_changes = all 
+  }
 }
 
 
