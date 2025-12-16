@@ -251,6 +251,7 @@ resource "google_compute_instance" "instance" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes = [ metadata ]
   }
   
   # Dependency added for the token ID injection
